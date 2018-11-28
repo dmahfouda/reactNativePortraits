@@ -5,8 +5,10 @@ import Canvas from 'react-native-canvas';
 export default class App extends React.Component {
 	constructor(props){
 		super(props)
+		this.currentStrokeColor = '#ffffff'
 		this.state = {
-			mouseDown: false
+			canvas: null
+			, mouseDown: false
 			, lastMousePos: null
 			, portraitHistory: {
 					mousePositionArray: []
@@ -14,12 +16,35 @@ export default class App extends React.Component {
 		}
 	}
   
-  handleCanvas = (canvas) => {
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = 'purple';
-    ctx.fillRect(0, 0, 200, 200);
-  }
+	handleCanvas = (canvas) => {
+		const ctx = canvas.getContext('2d');
+		ctx.fillStyle = 'purple';
+		ctx.fillRect(0, 0, 200, 200);
+		this.setState({canvas: canvas})
+	}
 
+	playDrawing = (canvas, mousePositionArray, mousePosIdx) => {
+		console.log(`mousePositionArray: ${mousePositionArray}`)
+		if (mousePositionArray.length < 2) {
+			return
+		}
+		console.log(mousePositionArray)
+		let ctx = canvas.getContext('2d')
+		let lastMousePos = mousePositionArray[mousePosIdx-1]
+		let mousePos = mousePositionArray[mousePosIdx]
+		if(!lastMousePos.mouseUp){
+			ctx.beginPath()
+			ctx.moveTo(lastMousePos.x, lastMousePos.y)
+			ctx.lineTo(mousePos.x, mousePos.y)
+			ctx.lineWidth = 2
+			ctx.strokeStyle = mousePositionArray[mousePosIdx-1].color
+			ctx.stroke()
+		}
+		if(mousePosIdx < mousePositionArray.length - 1){
+			this.playDrawing(canvas, mousePositionArray, mousePosIdx + 1)
+		}
+	}
+	
 	getAndStoreMousePos = (evt, mouseUpBool) => {
 		let newPH = this.state.portraitHistory
 		newPH.mousePositionArray.push({
@@ -28,21 +53,26 @@ export default class App extends React.Component {
 			, mouseUp: mouseUpBool
 			, color: this.currentStrokeColor 
 		})
+		console.log('setting state in getAndStoreMousePos')
 		this.setState({portraitHistory: newPH})
 		return {
 			x: evt.nativeEvent.locationX
 			, y: evt.nativeEvent.locationY
+			, mouseUp: mouseUpBool
 		}
 	}
 
 	mouseDownListener = (evt) => {
 		this.setState({
 			mouseDown: true
-			, lastMousePos: this.getAndStoreMousePos(evt ,false)
+			, lastMousePos: this.getAndStoreMousePos(evt, false)
 		})
 	}
 
   render() {
+  	if (this.state.canvas) {
+  		this.playDrawing(this.state.canvas, this.state.portraitHistory.mousePositionArray, 1)
+  	}
     return (
 			<View 
 				onStartShouldSetResponder={()=>true}
