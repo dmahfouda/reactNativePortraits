@@ -7,7 +7,6 @@ export default class App extends React.Component {
 		super(props)
 		this.state = {
 			mouseDown: false
-			, lastMousePos: null
 			, portraitHistory: {
 					mousePositionArray: []
 				}
@@ -36,10 +35,19 @@ export default class App extends React.Component {
 	}
 
 	mouseDownListener = (evt) => {
-		this.setState({
-			mouseDown: true
-			, lastMousePos: this.getAndStoreMousePos(evt ,false)
-		})
+		this.getAndStoreMousePos(evt ,false)
+		this.setState({mouseDown: true})
+	}
+
+	mouseMoveListener = (evt) => {
+		if (this.state.mouseDown) {
+			const mousePos = this.getAndStoreMousePos(evt, false)
+		}
+	}
+
+	mouseUpListener = (evt) => {
+		this.setState({mouseDown: false})
+		this.getAndStoreMousePos(evt, true)
 	}
 
   render() {
@@ -47,8 +55,8 @@ export default class App extends React.Component {
 			<View 
 				onStartShouldSetResponder={()=>true}
 				onResponderStart={this.mouseDownListener}
-				//onResponderMove
-				//onResponderRelease
+				onResponderMove={this.mouseMoveListener}
+				onResponderRelease={this.mouseUpListener}
 			>
         <Text>Dont open up App.js to start working on your app!</Text>
         <Canvas ref={this.handleCanvas}/>
