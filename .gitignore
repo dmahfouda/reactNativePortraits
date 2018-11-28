@@ -1,3 +1,6 @@
+# vim
+*.swp
+
 # Xcode
 !**/*.xcodeproj
 !**/*.pbxproj
@@ -69,3 +72,5 @@ package-lock.json
 # ReactCommon subdir shouldn't have Xcode project
 /ReactCommon/**/*.xcodeproj
 RNTester/build
+
+.expo/
