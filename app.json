@@ -21,6 +21,7 @@
       "**/*"
     ],
     "ios": {
+      "bundleIdentifier": "com.dandg.funportraits",
       "supportsTablet": true
     }
   }
