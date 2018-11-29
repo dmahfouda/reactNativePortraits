@@ -10,6 +10,7 @@ export default class App extends React.Component {
 			canvas: null
 			, mouseDown: false
 			, lastMousePos: null
+			, mousePosIdx: -1
 			, portraitHistory: {
 					mousePositionArray: []
 				}
@@ -24,7 +25,7 @@ export default class App extends React.Component {
 	}
 
 	playDrawing = (canvas, mousePositionArray, mousePosIdx) => {
-		console.log(`mousePositionArray: ${mousePositionArray}`)
+		console.log(`mousePosIdx: ${mousePosIdx}, mousePositionArray.length ${mousePositionArray.length}`)
 		if (mousePositionArray.length < 2) {
 			return
 		}
@@ -54,11 +55,14 @@ export default class App extends React.Component {
 			, color: this.currentStrokeColor 
 		})
 		console.log('setting state in getAndStoreMousePos')
-		this.setState({portraitHistory: newPH})
+		this.setState({
+			portraitHistory: newPH
+			, mousePosIdx: this.state.mousePosIdx+1
+		})
 		return {
 			x: evt.nativeEvent.locationX
 			, y: evt.nativeEvent.locationY
-			, mouseUp: mouseUpBool
+			, mouseUp: mouseUpBool		
 		}
 	}
 
@@ -80,7 +84,7 @@ export default class App extends React.Component {
 
   render() {
   	if (this.state.canvas) {
-  		this.playDrawing(this.state.canvas, this.state.portraitHistory.mousePositionArray, 1)
+  		this.playDrawing(this.state.canvas, this.state.portraitHistory.mousePositionArray, this.state.mousePosIdx)
   	}
     return (
 			<View 
